@@ -12,14 +12,19 @@ public class Janela extends JFrame {
     protected static final long serialVersionUID = 1L;
 
     protected JButton btnBusca = new JButton();
+
+    protected JLabel labelAssassinos = new JLabel("Assassinos", null, SwingConstants.CENTER);
+    protected JLabel labelVitimas = new JLabel("Vítimas", null, SwingConstants.CENTER);
     protected JButton btnCadastrar = new JButton();
     protected JButton btnAssassinos = new JButton("Assassinos");
     protected JButton btnVitimas = new JButton("Vítimas");
-    protected JPanel campoTabelas = new JPanel();
+    protected JPanel campoTabela1 = new JPanel();
+    protected JPanel campoTabela2 = new JPanel();
     public Janela() {
         super("Assassinos e Vítimas");
         setLayout(null);
-        //getContentPane().setSize(1000,1000);
+        //setPreferredSize(new Dimension(1000,1000));
+        setMinimumSize(new Dimension(1200,800));
         setResizable(false);
         getContentPane().setBackground(Color.DARK_GRAY);
 
@@ -49,23 +54,39 @@ public class Janela extends JFrame {
         btnCadastrar.setOpaque(true);
         btnCadastrar.setBounds(130,30,80,80);
 
-        add(btnAssassinos);
-        btnAssassinos.setBorderPainted(false);
-        btnAssassinos.setContentAreaFilled(true);
-        btnAssassinos.setBackground(Color.lightGray);
-        btnAssassinos.setOpaque(true);
-        btnAssassinos.setBounds(550,80,100,50);
+//        add(btnAssassinos);
+//        btnAssassinos.setBorderPainted(false);
+//        btnAssassinos.setContentAreaFilled(true);
+//        btnAssassinos.setBackground(Color.lightGray);
+//        btnAssassinos.setOpaque(true);
+//        btnAssassinos.setBounds(940,80,100,50);
+//
+//        add(btnVitimas);
+//        btnVitimas.setBorderPainted(false);
+//        btnVitimas.setContentAreaFilled(true);
+//        btnVitimas.setBackground(Color.lightGray);
+//        btnVitimas.setOpaque(true);
+//        btnVitimas.setBounds(1050,80,100,50);
 
-        add(btnVitimas);
-        btnVitimas.setBorderPainted(false);
-        btnVitimas.setContentAreaFilled(true);
-        btnVitimas.setBackground(Color.lightGray);
-        btnVitimas.setOpaque(true);
-        btnVitimas.setBounds(660,80,100,50);
+        add(campoTabela1);
+        campoTabela1.setBounds(30,180,550,550);
+        campoTabela1.setBackground(Color.lightGray);
 
-        add(campoTabelas);
-        campoTabelas.setBounds(30,130,730,420);
-        campoTabelas.setBackground(Color.lightGray);
+        add(campoTabela2);
+        campoTabela2.setBounds(600,180,550,550);
+        campoTabela2.setBackground(Color.lightGray);
+
+        labelAssassinos.setBounds(30, 130, 550, 50);
+        labelAssassinos.setOpaque(true);
+        labelAssassinos.setBackground(Color.lightGray);
+        labelAssassinos.setFont(new Font("Arial", Font.PLAIN, 25));
+        add(labelAssassinos);
+
+        labelVitimas.setBounds(600, 130, 550, 50);
+        labelVitimas.setFont(new Font("Arial", Font.PLAIN, 25));
+        labelVitimas.setOpaque(true);
+        labelVitimas.setBackground(Color.lightGray);
+        add(labelVitimas);
 
         try {
             ImageIcon searchIcon = new ImageIcon("src/resources/search_icon.png",
