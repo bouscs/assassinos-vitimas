@@ -1,4 +1,5 @@
 application.properties
+target/
 
 ### IntelliJ IDEA ###
 out/
