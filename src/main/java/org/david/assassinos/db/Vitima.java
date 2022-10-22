@@ -1,13 +1,14 @@
 package org.david.assassinos.db;
 
 import org.bson.types.ObjectId;
+import org.david.assassinos.App;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Objects;
 
-public class Vitima implements Cloneable {
-    private ObjectId id;
-
+public class Vitima extends Entity<Vitima> implements Cloneable {
     private String assassinoId;
 
     private String nome;
@@ -19,14 +20,6 @@ public class Vitima implements Cloneable {
     private String armaUtilizada;
 
     private String localMorte;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public String getAssassinoId() {
         return assassinoId;
@@ -77,11 +70,14 @@ public class Vitima implements Cloneable {
     }
 
     public Vitima() {
-        id = new ObjectId();
+        super(App.db.vitimas);
+
+        dataMorte = LocalDateTime.now();
     }
 
     public Vitima(String assassinoId, String nome, String sobrenome, LocalDateTime dataMorte, String armaUtilizada, String localMorte) {
-        id = new ObjectId();
+        super(App.db.vitimas);
+
         this.assassinoId = assassinoId;
         this.nome = nome;
         this.sobrenome = sobrenome;
@@ -91,13 +87,40 @@ public class Vitima implements Cloneable {
     }
 
     public Vitima(Vitima vitima) {
-        id = new ObjectId();
+        super(App.db.vitimas);
+
         assassinoId = vitima.assassinoId;
         nome = vitima.nome;
         sobrenome = vitima.sobrenome;
         dataMorte = vitima.dataMorte;
         armaUtilizada = vitima.armaUtilizada;
         localMorte = vitima.localMorte;
+    }
+
+    @Override
+    public void fromRow(Object[] o) throws DateTimeParseException {
+        String[] row = Arrays.stream(o).toArray(String[]::new);
+
+        id = new ObjectId(row[0]);
+        assassinoId = row[1];
+        nome = row[2];
+        sobrenome = row[3];
+        dataMorte = LocalDateTime.parse(row[4]);
+        armaUtilizada = row[5];
+        localMorte = row[6];
+    }
+
+    @Override
+    public Object[] toRow() {
+        return new Object[] {
+                id.toString(),
+                assassinoId,
+                nome,
+                sobrenome,
+                dataMorte.toString(),
+                armaUtilizada,
+                localMorte
+        };
     }
 
     @Override
@@ -149,6 +172,7 @@ public class Vitima implements Cloneable {
                 '}';
     }
 
+    @Override
     public Vitima clone() {
         return new Vitima(this);
     }

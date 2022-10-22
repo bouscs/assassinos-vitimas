@@ -1,14 +1,14 @@
-package org.david.assassinos;
+package org.david.assassinos.ui;
+import org.david.assassinos.App;
+import org.david.assassinos.db.Assassino;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import javax.imageio.ImageIO;
+import java.util.ArrayList;
 import javax.swing.*;
-import java.awt.*;
-import javax.swing.border.Border;
-import javax.swing.*;
-public class Janela extends JFrame {
+
+public class MainWindow extends JFrame {
     protected static final long serialVersionUID = 1L;
 
     protected JButton btnBusca = new JButton();
@@ -18,15 +18,25 @@ public class Janela extends JFrame {
     protected JButton btnCadastrar = new JButton();
     protected JButton btnAssassinos = new JButton("Assassinos");
     protected JButton btnVitimas = new JButton("Vítimas");
-    protected JPanel campoTabela1 = new JPanel();
-    protected JPanel campoTabela2 = new JPanel();
-    public Janela() {
+
+    private AssassinosTable assassinosTable;
+    private VitimasTable vitimasTable;
+
+    private JTabbedPane tabelasPane;
+
+    public MainWindow() {
         super("Assassinos e Vítimas");
         setLayout(null);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //setPreferredSize(new Dimension(1000,1000));
         setMinimumSize(new Dimension(1200,800));
         setResizable(false);
-        getContentPane().setBackground(Color.DARK_GRAY);
+        getContentPane().setBackground(Color.GRAY);
+
+
+        tabelasPane = new JTabbedPane();
+        add(tabelasPane);
+        tabelasPane.setBounds(30,30,1120,700);
 
         btnCadastrar.addActionListener(new ActionListener() {
             @Override
@@ -37,17 +47,17 @@ public class Janela extends JFrame {
         btnBusca.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //if(e.getSource() == btnBusca)
+
             }
         });
-        add(btnBusca);
+        //add(btnBusca);
         btnBusca.setBounds(30,30,80,80);
         btnBusca.setBorderPainted(false);
         btnBusca.setContentAreaFilled(true);
         btnBusca.setBackground(Color.lightGray);
         btnBusca.setOpaque(true);
 
-        add(btnCadastrar);
+        //add(btnCadastrar);
         btnCadastrar.setBorderPainted(false);
         btnCadastrar.setContentAreaFilled(true);
         btnCadastrar.setBackground(Color.lightGray);
@@ -68,25 +78,34 @@ public class Janela extends JFrame {
 //        btnVitimas.setOpaque(true);
 //        btnVitimas.setBounds(1050,80,100,50);
 
-        add(campoTabela1);
-        campoTabela1.setBounds(30,180,550,550);
-        campoTabela1.setBackground(Color.lightGray);
+        //add(campoTabela1);
+        //campoTabela1.setBounds(30,180,550,550);
+        //campoTabela1.setBackground(Color.lightGray);
 
-        add(campoTabela2);
-        campoTabela2.setBounds(600,180,550,550);
-        campoTabela2.setBackground(Color.lightGray);
+        //add(campoTabela2);
+        //campoTabela2.setBounds(600,180,550,550);
+        //campoTabela2.setBackground(Color.lightGray);
+
+        assassinosTable = new AssassinosTable(this);
+        assassinosTable.find();
+
+        vitimasTable = new VitimasTable(this);
+        vitimasTable.find();
+
+        tabelasPane.addTab("Assassinos", assassinosTable);
+        tabelasPane.addTab("Vítimas", vitimasTable);
 
         labelAssassinos.setBounds(30, 130, 550, 50);
         labelAssassinos.setOpaque(true);
         labelAssassinos.setBackground(Color.lightGray);
         labelAssassinos.setFont(new Font("Arial", Font.PLAIN, 25));
-        add(labelAssassinos);
+        //add(labelAssassinos);
 
         labelVitimas.setBounds(600, 130, 550, 50);
         labelVitimas.setFont(new Font("Arial", Font.PLAIN, 25));
         labelVitimas.setOpaque(true);
         labelVitimas.setBackground(Color.lightGray);
-        add(labelVitimas);
+        //add(labelVitimas);
 
         try {
             ImageIcon searchIcon = new ImageIcon("src/resources/search_icon.png",

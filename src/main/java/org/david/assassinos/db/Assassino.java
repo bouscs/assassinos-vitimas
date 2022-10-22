@@ -1,24 +1,19 @@
 package org.david.assassinos.db;
 
+import com.mongodb.client.MongoCollection;
 import org.bson.types.ObjectId;
+import org.david.assassinos.App;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
-public class Assassino implements Cloneable {
-    private ObjectId id;
+public class Assassino extends Entity<Assassino> implements Cloneable {
     private String nome;
     private String sobrenome;
     private LocalDateTime dataNascimento;
     private String armaFavorita;
     private String cidadeAtual;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public String getNome() {
         return nome;
@@ -61,11 +56,14 @@ public class Assassino implements Cloneable {
     }
 
     public Assassino() {
-        id = new ObjectId();
+        super(App.db.assassinos);
+
+        dataNascimento = LocalDateTime.now();
     }
 
     public Assassino(String nome, String sobrenome, LocalDateTime dataNascimento, String armaFavorita, String cidadeAtual) {
-        id = new ObjectId();
+        super(App.db.assassinos);
+
         this.nome = nome;
         this.sobrenome = sobrenome;
         this.dataNascimento = dataNascimento;
@@ -74,12 +72,37 @@ public class Assassino implements Cloneable {
     }
 
     public Assassino(Assassino assassino) {
-        id = new ObjectId();
+        super(App.db.assassinos);
+
         this.nome = assassino.nome;
         this.sobrenome = assassino.sobrenome;
         this.dataNascimento = assassino.dataNascimento;
         this.armaFavorita = assassino.armaFavorita;
         this.cidadeAtual = assassino.cidadeAtual;
+    }
+
+    @Override
+    public void fromRow(Object[] o) throws DateTimeParseException {
+        String[] row = Arrays.stream(o).toArray(String[]::new);
+
+        id = new ObjectId(row[0]);
+        nome = row[1];
+        sobrenome = row[2];
+        dataNascimento = LocalDateTime.parse(row[3]);
+        armaFavorita = row[4];
+        cidadeAtual = row[5];
+    }
+
+    @Override
+    public Object[] toRow() {
+        return new Object[] {
+            id.toString(),
+            nome,
+            sobrenome,
+            dataNascimento.toString(),
+            armaFavorita,
+            cidadeAtual
+        };
     }
 
     @Override
@@ -128,6 +151,7 @@ public class Assassino implements Cloneable {
                 '}';
     }
 
+    @Override
     public Assassino clone() {
         return new Assassino(this);
     }
