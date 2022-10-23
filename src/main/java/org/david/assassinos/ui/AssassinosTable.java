@@ -14,12 +14,6 @@ import java.util.List;
 
 public class AssassinosTable extends EntityTable<Assassino> {
 
-    class AssassinosTableFilterBy extends EntityTableFilter<Assassino> {
-        public AssassinosTableFilterBy(String property, String value) {
-            super(() -> App.db.assassinos.find(Filters.eq(property, value)).into(new ArrayList<>()));
-        }
-    }
-
     class AssassinosTableModel extends DefaultTableModel {
         private final String[] columnNames = {"ID", "Nome", "Sobrenome", "Data de Nascimento", "Arma Favorita", "Cidade Atual"};
 
@@ -46,8 +40,8 @@ public class AssassinosTable extends EntityTable<Assassino> {
         return new Assassino();
     }
 
-    public AssassinosTable(Frame owner) {
-        super(owner, App.db.assassinos);
+    public AssassinosTable() {
+        super(App.db.assassinos);
         setTableModel(new AssassinosTableModel());
     }
 }

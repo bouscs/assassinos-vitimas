@@ -34,8 +34,8 @@ public class VitimasTable extends EntityTable<Vitima> {
         return new Vitima();
     }
 
-    public VitimasTable(Frame owner) {
-        super(owner, App.db.vitimas);
+    public VitimasTable() {
+        super(App.db.vitimas);
         setTableModel(new VitimasTableModel());
     }
 }

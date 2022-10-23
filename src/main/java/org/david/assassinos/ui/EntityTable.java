@@ -30,14 +30,11 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
 
     public static final String CREATE = "CREATE", REFRESH = "REFRESH", SAVE = "SAVE", DUPLICATE = "DUPLICATE", COPY = "COPY", FIND = "FIND", DELETE = "DELETE";
 
-    protected Frame owner;
-
     protected ToolbarButton findButton, refreshButton, addButton, duplicateButton, saveButton, deleteButton;
 
     protected EntityTableFilter<T> filter;
 
-    public EntityTable(Frame owner, MongoCollection<T> collection) {
-        this.owner = owner;
+    public EntityTable(MongoCollection<T> collection) {
         this.collection = collection;
         filter = new EntityTableFilter<T>(collection);
 
@@ -119,7 +116,7 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
     public void refresh() {
         table.setEnabled(false);
         List<T> entities = filter.find();
-        System.out.println("Recarregar");
+
         setEntities(entities);
         saveButton.setEnabled(false);
         table.setEnabled(true);
@@ -244,7 +241,7 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
             try {
                 entity.save();
             } catch(Exception e) {
-                JDialog dialog = new JDialog(owner, "Erro ao salvar", true);
+                JDialog dialog = new JDialog(JOptionPane.getFrameForComponent(this), "Erro ao salvar", true);
                 dialog.setVisible(true);
             }
         }
@@ -291,6 +288,8 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
 
         switch(command) {
             case FIND:
+                setFilter(FilterDialog.showDialog(this, collection));
+                refresh();
                 break;
             case REFRESH:
                 refresh();

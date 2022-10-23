@@ -27,10 +27,10 @@ public class MainWindow extends JFrame {
         add(tabelasPane);
         tabelasPane.setBounds(30,30,1120,700);
 
-        assassinosTable = new AssassinosTable(this);
+        assassinosTable = new AssassinosTable();
         assassinosTable.refresh();
 
-        vitimasTable = new VitimasTable(this);
+        vitimasTable = new VitimasTable();
         vitimasTable.refresh();
 
         tabelasPane.addTab("Assassinos", assassinosTable);
