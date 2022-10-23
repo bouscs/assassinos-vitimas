@@ -9,25 +9,25 @@ import java.awt.*;
 
 public class VitimasTable extends EntityTable<Vitima> {
     class VitimasTableModel extends DefaultTableModel {
-    private final String[] columnNames = {"ID", "ID Assassino", "Nome", "Sobrenome", "Data da Morte", "Arma Utilizada", "Local da Morte"};
+        private final String[] columnNames = {"ID", "ID Assassino", "Nome", "Sobrenome", "Data da Morte", "Arma Utilizada", "Local da Morte"};
 
-    @Override
-    public boolean isCellEditable(int row, int column) {
-        if(column == 0) return false;
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            if(column == 0) return false;
 
-        return true;
+            return true;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
     }
-
-    @Override
-    public int getColumnCount() {
-        return columnNames.length;
-    }
-
-    @Override
-    public String getColumnName(int column) {
-        return columnNames[column];
-    }
-}
 
     @Override
     public Vitima createEntity() {

@@ -6,6 +6,8 @@ import org.bson.types.ObjectId;
 import org.david.assassinos.db.Entity;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -26,15 +28,18 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
 
     protected MongoCollection<T> collection;
 
-    public static final String CREATE = "CREATE", SAVE = "SAVE", DUPLICATE = "DUPLICATE", COPY = "COPY", FIND = "FIND", DELETE = "DELETE";
+    public static final String CREATE = "CREATE", REFRESH = "REFRESH", SAVE = "SAVE", DUPLICATE = "DUPLICATE", COPY = "COPY", FIND = "FIND", DELETE = "DELETE";
 
     protected Frame owner;
 
-    protected ToolbarButton findButton, addButton, duplicateButton, saveButton, deleteButton, copyButton;
+    protected ToolbarButton findButton, refreshButton, addButton, duplicateButton, saveButton, deleteButton;
+
+    protected EntityTableFilter<T> filter;
 
     public EntityTable(Frame owner, MongoCollection<T> collection) {
         this.owner = owner;
         this.collection = collection;
+        filter = new EntityTableFilter<T>(collection);
 
         setLayout(new BorderLayout());
 
@@ -46,26 +51,26 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
         findButton.addActionListener(this);
         toolBar.add(findButton);
 
+        refreshButton = new ToolbarButton("images/refresh_icon.png", REFRESH, "Recarregar dados do banco", "Recarregar");
+        refreshButton.addActionListener(this);
+        toolBar.add(refreshButton);
+
         addButton = new ToolbarButton("images/add_icon.png", CREATE, "Adicionar nova fileira", "Criar");
         addButton.addActionListener(this);
         toolBar.add(addButton);
-
-        duplicateButton = new ToolbarButton("images/duplicate_icon.png", DUPLICATE, "Duplicar fileira", "Duplicar");
-        duplicateButton.addActionListener(this);
-        toolBar.add(duplicateButton);
 
         saveButton = new ToolbarButton("images/save_icon.png", SAVE, "Salvar mudanças", "Salvar");
         saveButton.addActionListener(this);
         saveButton.setEnabled(false);
         toolBar.add(saveButton);
 
+        duplicateButton = new ToolbarButton("images/duplicate_icon.png", DUPLICATE, "Duplicar fileira", "Duplicar");
+        duplicateButton.addActionListener(this);
+        toolBar.add(duplicateButton);
+
         deleteButton = new ToolbarButton("images/delete_icon.png", DELETE, "Excluir fileira", "Deletar");
         deleteButton.addActionListener(this);
         toolBar.add(deleteButton);
-
-        copyButton = new ToolbarButton("images/copy_icon.png", COPY, "Copiar valor da célula selecionada", "Copiar Célula");
-        copyButton.addActionListener(this);
-        toolBar.add(copyButton);
 
         add(toolBar, BorderLayout.PAGE_START);
 
@@ -74,24 +79,47 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
 
+        JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.addPopupMenuListener(new PopupMenuListener() {
+
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    int rowAtPoint = table.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table));
+                    int columnAtPoint = table.columnAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table));
+                    if (rowAtPoint > -1 && columnAtPoint > -1) {
+                        table.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+                        table.setColumnSelectionInterval(columnAtPoint, columnAtPoint);
+                    }
+                });
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+        });
+        JMenuItem deleteItem = new JMenuItem("Copiar");
+        deleteItem.addActionListener(e -> copyLeadSelection());
+        popupMenu.add(deleteItem);
+        table.setComponentPopupMenu(popupMenu);
+
         add(scrollPane, BorderLayout.CENTER);
     }
 
     public abstract T createEntity();
 
-    public void find() {
-        table.setEnabled(false);
-        List<T> entities = collection.find().into(new ArrayList<>());
-
-        setEntities(entities);
-        saveButton.setEnabled(false);
-        table.setEnabled(true);
+    public void setFilter(EntityTableFilter<T> filter) {
+        this.filter = filter;
     }
 
-    public void findById(String id) {
+    public void refresh() {
         table.setEnabled(false);
-        List<T> entities = collection.find(new Document("_id", new ObjectId(id))).into(new ArrayList<>());
-
+        List<T> entities = filter.find();
+        System.out.println("Recarregar");
         setEntities(entities);
         saveButton.setEnabled(false);
         table.setEnabled(true);
@@ -245,7 +273,7 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
             }
         }
 
-        find();
+        refresh();
 
         table.setEnabled(true);
     }
@@ -262,6 +290,11 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
         String command = e.getActionCommand();
 
         switch(command) {
+            case FIND:
+                break;
+            case REFRESH:
+                refresh();
+                break;
             case CREATE:
                 addNewRow(createEntity());
                 break;
@@ -273,9 +306,6 @@ public abstract class EntityTable<T extends Entity> extends JPanel implements Ac
                 break;
             case DELETE:
                 deleteSelection();
-                break;
-            case COPY:
-                copyLeadSelection();
                 break;
             default:
                 break;

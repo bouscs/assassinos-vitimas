@@ -1,5 +1,6 @@
 package org.david.assassinos.ui;
 
+import com.mongodb.client.model.Filters;
 import org.david.assassinos.App;
 import org.david.assassinos.db.Assassino;
 
@@ -12,6 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AssassinosTable extends EntityTable<Assassino> {
+
+    class AssassinosTableFilterBy extends EntityTableFilter<Assassino> {
+        public AssassinosTableFilterBy(String property, String value) {
+            super(() -> App.db.assassinos.find(Filters.eq(property, value)).into(new ArrayList<>()));
+        }
+    }
 
     class AssassinosTableModel extends DefaultTableModel {
         private final String[] columnNames = {"ID", "Nome", "Sobrenome", "Data de Nascimento", "Arma Favorita", "Cidade Atual"};
